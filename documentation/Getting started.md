@@ -1,6 +1,7 @@
 # Getting started with Eleventy
 
-This first section will focus on initial setup of an 11ty project and an introduction to some of its main features.
+This first section will focus on initial setup of an 11ty project and an introduction to some of its main features such as partials, custom data and collections.
+
 
 ## Installation and basic configuration
 
@@ -33,6 +34,7 @@ module.exports = function (eleventyConfig) {
   };
 };
 ```
+
 
 ## Let's display some content
 Create the `src` folder and a new `index.md` file inside.
@@ -140,6 +142,7 @@ blockquote {
 }
 ```
 
+
 ## Partials
 
 The layout feels quite empty, and I would like to start creating some partials, which you can look at as reusable pieces of template. Let's start with a header and a footer.
@@ -204,6 +207,7 @@ Now we need to put these partials in our base template, using the `include` tag.
   </body>
 </html>
 ```
+
 
 ## Custom data
 
@@ -280,4 +284,12 @@ footer {
 }
 ```
 
-Our `useful_links.js` file for now holds some static data, but it can also be used to fetch it from an external source, which 11ty would query each time it builds the output site. We'll see how this can work later, while hooking up to our Sanity CMS.
+Our `useful_links.js` file for now holds some static data, but it can also be used to fetch it from an external source, which 11ty would query each time it builds the output site. We'll see how this can work later, while hooking up 11ty to our Sanity CMS.
+
+
+## Collections
+
+Ok, let's say we want to write some articles, which would have their own paths on our site, and list them on our homepage. At this point I need some example content, and I'm going to ask ChatGPT to generate some bird-themed articles. I could also use Lorem Ipsum but it looks less interesting. Feel free to create the articles with your own content if you already have some.
+
+> My example files are available here : **TODO: add link to ressources**
+
