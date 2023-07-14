@@ -37,7 +37,7 @@ Let's write some basic markdown in this file, for example :
 ```
 > This is some text in a blockquote.
 
-[What about a link to Eleventy's documentation ?](https://www.11ty.dev/docs/)
+What about a [link to Eleventy's documentation](https://www.11ty.dev/docs/)?
 
 **Nice !**
 ```
@@ -80,4 +80,50 @@ layout: base
 
 Now in `base.njk` replace the `<title>` string by `{{ title }}`. Those sets of curly braces will take in some variables and output their content at build time. In the `<body>`, create an `h1` tag within and put `{{ title }}` there too. Finally, get the content there using `{{ content | safe }}`. The `content` variable is referring to our markdown body, and is followed by the "safe" keyword, with a pipe (`|`) in between. This is how you can use filters in 11ty, and `safe` is a built-in directive that allows safe output of HTML elements. You can try removing it, letting just `{{ content }}`, and will see on your page the literal HTML code as a string.
 
-If it's not already running, start a Browsersync web server displaying our output in a browser, using the `npm start` command. It will watch for changes within the project and automatically refresh the page. Take a look in the browser (usually at `http://localhost:8080/`) and see how beautiful is this! Well, hum, we can surely make it prettier with some CSS styles a bit later.
+If it's not already running, start a Browsersync web server displaying our output in a browser, using the `npm start` command. It will watch for changes within the project and automatically refresh the page. Take a look in the browser (usually at `http://localhost:8080/`) and see how beautiful is this! Well, hum, we can surely make it prettier with some custom styles.
+
+
+## CSS
+
+Let's create our first CSS stylesheet! I usually store them in a `css` subfolder within `src` but it's up to you. Just make sure to update the 11ty configuration accordingly.
+
+*`src/css/styles.css`*
+```
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: sans-serif;
+}
+```
+
+To start, I usually include some basic "reset" rules and a sans-serif font for the body. 
+
+Now before going further we need to open `.eleventy.js` and, before the `return` statement, write these two lines :
+```
+eleventyConfig.addPassthroughCopy("./src/css");
+eleventyConfig.addWatchTarget("./src/css/");
+```
+The first line asks 11ty to pass files from our css folder to the project build. The second will watch for their changes when a live server is running.
+
+> 11ty is also capable of processing .scss with some [additional steps](https://11ty.rocks/posts/process-css-with-lightningcss/).
+
+Just before moving on, I'll wrap my content in a `.container` div and add some padding and max-width to it. Also, since I'm using a blockquote in this example and native CSS nesting now being a thing, I've added some rules to it aswell.
+
+```
+.container {
+    max-width: 70em;
+    padding: 1em;
+    margin: auto;
+        
+    & blockquote {
+        padding: .3em .5em;
+        background-color: #f1f5f9;
+        max-width: max-content;
+        border-left: 4px solid #0002;
+    }
+}
+```
