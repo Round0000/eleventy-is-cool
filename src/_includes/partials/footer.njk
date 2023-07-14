@@ -1,0 +1,9 @@
+<footer>
+  <div class="container">
+    <ul>
+      {% for link in useful_links %}
+      <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+</footer>

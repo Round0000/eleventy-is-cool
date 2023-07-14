@@ -1,5 +1,7 @@
 # Getting started with Eleventy
 
+This first section will focus on initial setup of an 11ty project and an introduction to some of its main features.
+
 ## Installation and basic configuration
 
 Initialize npm within your project's empty folder.
@@ -19,7 +21,8 @@ Set the build and serve scripts in the `package.json` file.
 ```
 
 Create the 11ty configuration file `.eleventy.js` at the root of the project and for now just define the input and output folders names.
-*You are free to name those differently if needed.*
+You are free to name those differently if needed.
+
 ```
 module.exports = function (eleventyConfig) {
   return {
@@ -55,8 +58,9 @@ At this point the code is just sitting there without any html boilerplate. Let's
 
 > .njk files are related to Nunjucks, a template language that works quite well with Eleventy. Many other are compatible with Eleventy, see [documentation on 11ty template languages](https://www.11ty.dev/docs/languages/).
 
-Insert the html boilrerplate into the `base.njk` file. You can copy-paste the following code or use Emmet's `!` shortcut to set it up.
+Insert the html boilerplate into the `base.njk` file. You can copy-paste the following code or use Emmet's `!` shortcut to set it up.
 
+📂 *`src/_includes/base.njk`*
 ```
 <!DOCTYPE html>
 <html lang="en">
@@ -87,7 +91,7 @@ If it's not already running, start a Browsersync web server displaying our outpu
 
 Let's create our first CSS stylesheet! I usually store them in a `css` subfolder within `src` but it's up to you. Just make sure to update the 11ty configuration accordingly.
 
-*`src/css/styles.css`*
+📂 *`src/css/styles.css`*
 ```
 * {
     box-sizing: border-box;
@@ -111,19 +115,169 @@ The first line asks 11ty to pass files from our css folder to the project build.
 
 > 11ty is also capable of processing .scss with some [additional steps](https://11ty.rocks/posts/process-css-with-lightningcss/).
 
-Just before moving on, I'll wrap my content in a `.container` div and add some padding and max-width to it. Also, since I'm using a blockquote in this example and native CSS nesting now being a thing, I've added some rules to it aswell.
+Just before moving on, I'll wrap my content in a `.container` div and add some padding and max-width to it. Also, since I'm using a blockquote in this example, I've added some styles to it aswell. Finally I set the body minimum height to the viewport height, and add Flexbox. This will be useful for a nice display of the footer in the next section.
 
+
+📂 *`src/css/styles.css`*
 ```
+body {
+    font-family: sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
 .container {
     max-width: 70em;
     padding: 1em;
-    margin: auto;
-        
-    & blockquote {
-        padding: .3em .5em;
-        background-color: #f1f5f9;
-        max-width: max-content;
-        border-left: 4px solid #0002;
+}
+
+blockquote {
+    padding: .3em .5em;
+    background-color: #f1f5f9;
+    max-width: max-content;
+    border-left: 4px solid #0002;
+}
+```
+
+## Partials
+
+The layout feels quite empty, and I would like to start creating some partials, which you can look at as reusable pieces of template. Let's start with a header and a footer.
+
+Under `_includes/partials` create `header.njk` and `footer.njk`, and set some styles for these within our main CSS stylesheet.
+
+> I'm setting a `margin-top: auto;` on the footer so it can work with the flex property and min-height of the body element, and therefore push it to the bottom of our screen.
+
+📂 *`src/partials/header.njk`*
+```
+<header>
+    <div class="container">
+        <p>I'm the header.</p>
+    </div>
+</header>
+```
+
+📂 *`src/partials/footer.njk`*
+```
+<footer>
+    <div class="container">
+        <p>I'm the footer.</p>
+    </div>
+</footer>
+```
+
+📂 *`src/css/styles.css`*
+```
+header {
+    background-color: #e4e4e7;
+    border-bottom: 1px solid #0002;
+}
+
+footer {
+    background-color: #222;
+    color: #fff;
+    margin-top: auto;
+}
+```
+
+Now we need to put these partials in our base template, using the `include` tag. At the moment our file should look like this :
+```
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    {% include "partials/header.njk" %}
+
+    <div class="container">
+      <h1>{{ title }}</h1>
+      <main>{{ content | safe }}</main>
+    </div>
+
+    {% include "partials/footer.njk" %}
+  </body>
+</html>
+```
+
+## Custom data
+
+Under `src` create a `_data` folder. It will contain globally available custom data, either in .json or .js files. We can try adding a list of links to our footer using a custom data file. Create `links.js` in `_data` and make it export an array of URLs and labels.
+
+📂 *`src/_data/useful_links.js`*
+```
+module.exports = [
+    {
+        'label': "Eleventy",
+        'url': 'https://www.11ty.dev/'
+    },
+    {
+        'label': "Sanity",
+        'url': 'https://www.sanity.io/'
+    },
+    {
+        'label': "GitHub",
+        'url': 'https://github.com/'
+    },
+    {
+        'label': "Netlify",
+        'url': 'https://www.netlify.com/'
+    },
+]
+```
+
+In the footer partial replace the placeholder text by an unordered list of links, using a `{% for %}` loop.
+
+📂 *`src/_includes/partials/footer.njk`*
+```
+<footer>
+  <div class="container">
+    <ul>
+      {% for link in useful_links %}
+      <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+</footer>
+
+```
+
+Set some custom styles for the list and links.
+> In this example I'm using [nested CSS rules](https://developer.chrome.com/articles/css-nesting/), since it's finally natively supported in all major browsers! 
+
+📂 *`src/css/styles.css`*
+```
+footer {
+    background-color: #222;
+    color: #fff;
+    margin-top: auto;
+
+    & ul {
+        list-style: none;
+        display: flex;
+        gap: 1em;
+
+        & a {
+            display: block;
+            padding: .3em .5em;
+            color: #fff;
+            border: 1px solid #fff5;
+            text-decoration: none;
+            background-color: #1e293b;
+            transition: all .2s;
+
+            &:hover {
+                border-color: #fff;
+                background-color: #334155;
+            }
+        }
     }
 }
 ```
+
+Our `useful_links.js` file for now holds some static data, but it can also be used to fetch it from an external source, which 11ty would query each time it builds the output site. We'll see how this can work later, while hooking up to our Sanity CMS.
